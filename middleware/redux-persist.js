@@ -24,6 +24,65 @@ const store = createStore(rootReducer); // store
 // через него сохраняем и выгружаем
 const persistor = persistStore(store, persistConfig);
 
+
+//whitelist - какие ключи должны быть сохранены
+//blacklist - какие ключи не должны быть сохранены
+//пример
+import { persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+
+const authPersistConfig = {
+  key: 'auth',
+  storage: storage,
+  whitelist: ['token', 'username'] //они в редукторе
+};
+
+const loadingPersistConfig = {
+  key: 'loading',
+  storage: storage,
+  blacklist: ['isLoading'] //он в редукторе
+};
+
+const authReducer = (state = {}, action) => {
+  switch (action.type) {
+    case 'LOGIN_SUCCESS':
+      return {
+        ...state,
+        token: action.payload.token,
+        username: action.payload.username
+      };
+    case 'LOGOUT':
+      return {};
+    default:
+      return state;
+  }
+};
+
+const loadingReducer = (state = { isLoading: false }, action) => {
+  switch (action.type) {
+    case 'LOADING_START':
+      return {
+        ...state,
+        isLoading: true
+      };
+    case 'LOADING_END':
+      return {
+        ...state,
+        isLoading: false
+      };
+    default:
+      return state;
+  }
+};
+
+const persistedAuthReducer = persistReducer(authPersistConfig, authReducer);
+const persistedLoadingReducer = persistReducer(loadingPersistConfig, loadingReducer);
+
+export default combineReducers({
+  auth: persistedAuthReducer,
+  loading: persistedLoadingReducer
+});
+
 //redux persist поддерживает возможность создания собственного хранилища
 //с помощью интерфейса, описывающего методы getItem, setItem, removeItem 
 //и getAllKeys. Это позволяет использовать любое хранилище, которое соответствует
