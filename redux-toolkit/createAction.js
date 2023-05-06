@@ -1,4 +1,3 @@
-// 15 сложных вопросов про createReducer в Redux Toolkit
 
 //createAction - это тот же actionCreator
 const actionCreator = createAction('ТИП_ВОЗДЕЙСТВИЯ')
